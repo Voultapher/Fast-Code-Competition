@@ -1,0 +1,15 @@
+----- TODO -----
+
+Write async-io test and benchmark script
+
+Test Script:
+Run tests with 3 sizes, diff serial vs async, repeat, make graph
+
+Write 1v1 challenge framework
+
+Rust, heavy breathing
+
+* Up until the end of presentation time, I'll try to collect everyones build
+requirements for the async io challenge
+
+----- DONE -----
