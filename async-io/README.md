@@ -13,7 +13,7 @@ Create 2 applications:
 * Run loop creating and feeding tasks N times
 
 ### Shared:
-* N is commandline specified number
+* N is a command-line specified number
 * Task is unknown closure
 * Build and run on Linux
 
@@ -22,10 +22,10 @@ Create 2 applications:
 * Program will be timed externally
 * Closure details will be revealed 5 minutes  
 before the coding time ends
-* Test will be done with different values for N
+* Test will be done with varying values for N
 * Each task has to be executed
 
 ---
 
 ## Closure Details
-* Print `Hello World` to stdout
+* Print the numbers 1 to N to stdout
