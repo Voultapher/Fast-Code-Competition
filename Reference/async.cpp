@@ -4,6 +4,8 @@
 #include <atomic>
 #include <tuple>
 
+#include <fmt.hpp>
+
 template<typename... Args> class packed_function
 {
 public:
@@ -140,23 +142,31 @@ private:
 };
 
 
-#include <iostream>
 #include <functional>
+
+#include <stdio.h>
+#include <fmt.hpp>
 
 int main(int argc, char* argv[])
 {
   if (argc != 2)
     return 1;
 
-  std::ios::sync_with_stdio(false);
+  //std::ios::sync_with_stdio(false);
 
-  task_queue<std::function<void()>, lock::mutex> render_queue{};
-  //task_queue<packed_function<int>> render_queue{};
+  //task_queue<std::function<void()>, lock::mutex> render_queue{};
+  task_queue<packed_function<uint32_t>> render_queue{};
 
-  int i{};
-  while(i < static_cast<int>(std::stoi(argv[1])))
+  uint32_t i{};
+  uint32_t max = static_cast<uint32_t>(std::stoi(argv[1]));
+  while(i < max)
   {
-    render_queue.add_task([i] { std::cout << i; });
+    render_queue.add_task([](uint32_t i)
+      {
+        fixed::fixed_uint32_t fi{i};
+        fwrite(fi.data(), sizeof(char), fi.size(), stdout);
+      }, i
+    );
     ++i;
   }
 }
