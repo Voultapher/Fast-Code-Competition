@@ -39,43 +39,16 @@ private:
   }
 };
 
-
-class atomic_lock_guard
-{
-public:
-  explicit atomic_lock_guard(std::atomic_flag& lock) noexcept : lock_(lock)
-  {
-    while(lock_.test_and_set(std::memory_order_acq_rel));
-  }
-
-  ~atomic_lock_guard()
-  {
-    lock_.clear(std::memory_order_release);
-  }
-private:
-  std::atomic_flag& lock_;
-};
-
-namespace lock
-{
-  struct atomic{}; // guranteed lockfree but will spin
-  struct mutex{}; // can sleep
-}
-
-template<typename Closure, typename Lock = lock::mutex>class task_queue
+template<typename Closure>class task_queue
 {
 public:
   using closure_t = Closure;
   using tasks_t = std::vector<closure_t>;
 
-  using is_atomic = std::is_same<Lock, lock::atomic>;
-  using lock_t = std::conditional_t<is_atomic::value, std::atomic_flag, std::mutex>;
-  using guard_t = std::conditional_t<is_atomic::value,
-    atomic_lock_guard,
-    std::lock_guard<std::mutex>
-  >;
+  using lock_t = std::mutex;
+  using guard_t = std::lock_guard<std::mutex>;
 
-  explicit task_queue() : lock_(init_lock())
+  explicit task_queue()
   {
     auto execution_loop = [&active = active_, &lock = lock_, &tasks = tasks_]
     {
@@ -131,14 +104,6 @@ private:
   std::atomic_flag active_ = ATOMIC_FLAG_INIT;
   tasks_t tasks_;
   std::future<void> future_;
-
-  auto init_lock() -> lock_t
-  {
-    if constexpr (is_atomic::value)
-      return ATOMIC_FLAG_INIT;
-    else
-      return {};
-  }
 };
 
 
@@ -152,13 +117,10 @@ int main(int argc, char* argv[])
   if (argc != 2)
     return 1;
 
-  //std::ios::sync_with_stdio(false);
-
-  //task_queue<std::function<void()>, lock::mutex> render_queue{};
   task_queue<packed_function<uint32_t>> render_queue{};
 
   uint32_t i{};
-  uint32_t max = static_cast<uint32_t>(std::stoi(argv[1]));
+  const auto max = static_cast<uint32_t>(std::stoi(argv[1]));
   while(i < max)
   {
     render_queue.add_task([](uint32_t i)

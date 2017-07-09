@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     return 1;
 
   uint32_t i{};
-  uint32_t max = static_cast<uint32_t>(std::stoi(argv[1]));
+  const auto max = static_cast<uint32_t>(std::stoi(argv[1]));
   while(i < max)
   {
     fixed::fixed_uint32_t fi{i++};
