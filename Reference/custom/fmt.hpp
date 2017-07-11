@@ -3,234 +3,138 @@
 
 #include <limits>
 #include <cstdint>
-#include <cstdint>
-#include <tuple>
 #include <array>
-#include <string>
+
+/*class atoi_func
+{
+public:
+    atoi_func(): value_() {}
+
+    inline int value() const { return value_; }
+
+    inline bool operator() (const char *str, size_t len)
+    {
+        value_ = 0;
+        int sign = 1;
+        if (str[0] == '-') { // handle negative
+            sign = -1;
+            ++str;
+            --len;
+        }
+
+        switch (len) { // handle up to 10 digits, assume we're 32-bit
+            case 10:    value_ += (str[len-10] - '0') * 1000000000;
+            case  9:    value_ += (str[len- 9] - '0') * 100000000;
+            case  8:    value_ += (str[len- 8] - '0') * 10000000;
+            case  7:    value_ += (str[len- 7] - '0') * 1000000;
+            case  6:    value_ += (str[len- 6] - '0') * 100000;
+            case  5:    value_ += (str[len- 5] - '0') * 10000;
+            case  4:    value_ += (str[len- 4] - '0') * 1000;
+            case  3:    value_ += (str[len- 3] - '0') * 100;
+            case  2:    value_ += (str[len- 2] - '0') * 10;
+            case  1:    value_ += (str[len- 1] - '0');
+                value_ *= sign;
+                return value_ > 0;
+            default:
+                return false;
+        }
+    }
+private:
+    int value_;
+};*/
 
 namespace fixed
 {
 
-// ---fixed_type---
-template<
-    size_t size_,
-    typename C
-> class fixed_type
-{
-public:
-    using value_type = typename C::value_type;
-
-    explicit fixed_type() noexcept
-    {
-        for (size_t i = 0; i < size_ - 1; ++i)
-            buff_[i] = '\0';
-        buff_.back() = '\n';
-    }
-
-    template<typename... Args> fixed_type(Args&&... args)
-  	{
-    	C{ buff_, std::forward<Args>(args)... };
-    }
-
-    fixed_type(const fixed_type&) = default;
-    fixed_type(fixed_type&&) = default;
-
-    fixed_type& operator= (const fixed_type&) = default;
-    fixed_type& operator= (fixed_type&&) = default;
-
-    ~fixed_type() = default;
-
-    // would be nicer with dot operator
-    constexpr operator value_type() const noexcept
-    {
-        return C::deserialize(buff_);
-    }
-
-    static constexpr size_t size() noexcept { return size_; }
-
-    constexpr const char* data() const noexcept { return buff_.data(); }
-
-private:
-    std::array<char, size_> buff_;
-};
-
-// ---fixed_wrapper---
-template<typename C> struct wrapper : C
-{
-    static_assert(std::alignment_of<C>::value == sizeof(char),
-        "User class has to be byte aligned!");
-
-    using C::C;
-
-    const char* data() const noexcept
-    {
-        return reinterpret_cast<const char*>(this);
-    }
-
-    size_t size() const noexcept
-    {
-        return sizeof(*this);
-    }
-};
-
-
-// ---fixed_basic_string---
 namespace detail
 {
-struct fixed_basic_string
-{
-    using value_type = char*;
+using fixed_buff_value_t = char;
 
-    template<size_t b_size, size_t c_size> fixed_basic_string(
-        std::array<char, b_size>& arr,
-        const char (&buff)[c_size]
-    )
-    {
-        static_assert(c_size < b_size,
-            "String too large for fixed_basic_string");
-
-        for (size_t i = 0; i < c_size; ++i)
-            arr[i] = buff[i];
-
-        for (size_t i = c_size; i < b_size; ++i)
-              arr[i] = '\0';
-
-        arr.back() = '\n';
-    }
-
-    template<size_t size> static value_type deserialize(
-        const std::array<char, size>& arr
-    )
-    {
-        return const_cast<char*>(arr.data());
-    }
-};
-} // namespace detail
-
-template<size_t size> using fixed_basic_string = fixed_type<
-    size, detail::fixed_basic_string
->;
-
-// ---fixed_basic_int---
-namespace detail
-{
-static constexpr char DIGITS[] =
+static constexpr fixed_buff_value_t DIGITS[] =
 "0001020304050607080910111213141516171819"
 "2021222324252627282930313233343536373839"
 "4041424344454647484950515253545556575859"
 "6061626364656667686970717273747576777879"
 "8081828384858687888990919293949596979899";
 
-template<typename T> struct fixed_basic_unsigned
+template<typename C> class fixed_basic_unsigned
 {
-    using value_type = T;
+public:
+  using value_t = C;
+  static constexpr auto value_size = std::numeric_limits<value_t>::digits10 + 1;
 
-    template<size_t size> fixed_basic_unsigned(
-        std::array<char, size>& arr,
-        T value
-    )
+  using buff_value_t = fixed_buff_value_t;
+
+  fixed_basic_unsigned(value_t value) noexcept : offset_(0)
+	{
+    auto it = buff_.end();
+    *--it = '\0';
+
+    for (; value >= 100; value /= 100)
     {
-        auto it = arr.end();
-        *--it = '\0';
-
-        for (; value > 100; value /= 100)
-        {
-            const int index = static_cast<int>(value % 100 * 2);
-            *--it = DIGITS[index + 1];
-            *--it = DIGITS[index];
-        }
-
-        if (value < 10)
-        {
-            *--it = static_cast<char>('0' + value);
-        }
-        else
-        {
-            const int index = static_cast<int>(value * 2);
-            *--it = DIGITS[index + 1];
-            *--it = DIGITS[index];
-        }
-
-        const auto last = arr.begin();
-        if (it != last)
-            for (; --it != last;)
-                *it = '\0';
+      const auto index = static_cast<int>(value % 100 * 2);
+      *--it = DIGITS[index + 1];
+      *--it = DIGITS[index];
     }
 
-    template<size_t size> static value_type deserialize(
-        const std::array<char, size>& arr
-    )
+    if (value < 10)
     {
-        value_type ret{};
-
-        auto c = arr.data();
-        for (; *c < '0' || *c > '9'; ++c);
-
-        for (; *c != '\n'; ++c)
-        {
-            ret *= 10;
-            ret += *c - '0';
-        }
-        return ret;
+      *--it = static_cast<buff_value_t>('0' + value);
     }
+    else
+    {
+      const auto index = static_cast<int>(value * 2);
+      *--it = DIGITS[index + 1];
+      *--it = DIGITS[index];
+    }
+
+    for (auto last = buff_.begin(); it != last; --it, ++offset_);
+  }
+
+  fixed_basic_unsigned(const fixed_basic_unsigned&) = default;
+  fixed_basic_unsigned(fixed_basic_unsigned&&) = default;
+
+  fixed_basic_unsigned& operator= (const fixed_basic_unsigned&) = default;
+  fixed_basic_unsigned& operator= (fixed_basic_unsigned&&) = default;
+
+  ~fixed_basic_unsigned() = default;
+
+  // would be nicer with dot operator
+  constexpr operator value_t() const noexcept
+  {
+    value_t ret{};
+
+    auto c = buff_.data();
+    for (; *c < '0' || *c > '9'; ++c);
+
+    for (; *c != '\n'; ++c)
+    {
+      ret *= 10;
+      ret += *c - '0';
+    }
+    return ret;
+  }
+
+  constexpr size_t size() noexcept { return value_size - offset_; }
+
+  constexpr const buff_value_t* data() const noexcept
+  {
+    return buff_.data() + offset_;
+  }
+
+private:
+  std::array<buff_value_t, value_size> buff_;
+  int8_t offset_;
 };
 
-template<typename T> struct fixed_basic_int
-{
-    using value_type = T;
-
-    template<size_t b_size> fixed_basic_int(
-        std::array<char, b_size>& arr,
-        T value
-    )
-    {
-        static_assert(std::is_integral<T>::value,
-            "fixed_basic_int only support integral types!");
-
-        arr.front() = '\0';
-        if (value < 0)
-        {
-            value = 0 - value;
-            arr.front() = '-';
-        }
-
-        fixed_basic_unsigned<T>{arr, value};
-    }
-
-    template<size_t b_size> static value_type deserialize(
-        const std::array<char, b_size>& arr
-    )
-    {
-        return fixed_basic_unsigned<value_type>::deserialize(arr);
-    }
-};
 } // namespace detail
 
-template<typename T> using fixed_basic_int = fixed_type<
-    std::numeric_limits<T>::digits10 + 2,
-    std::conditional_t<std::is_unsigned<T>::value,
-        detail::fixed_basic_unsigned<T>,
-        detail::fixed_basic_int<T>
-    >
->;
-
-// ---User Types---
-using fixed_string = fixed_basic_string<sizeof(std::string)>;
-using fixed_char = char;
-
-// signed
-using fixed_int = fixed_basic_int<int>;
-using fixed_int8_t = fixed_basic_int<int8_t>;
-using fixed_int16_t = fixed_basic_int<int16_t>;
-using fixed_int32_t = fixed_basic_int<int32_t>;
-using fixed_int64_t = fixed_basic_int<int64_t>;
-
 // unsigned
-using fixed_unsigned = fixed_basic_int<unsigned>;
-using fixed_uint8_t = fixed_basic_int<uint8_t>;
-using fixed_uint16_t = fixed_basic_int<uint16_t>;
-using fixed_uint32_t = fixed_basic_int<uint32_t>;
-using fixed_uint64_t = fixed_basic_int<uint64_t>;
+using fixed_unsigned = detail::fixed_basic_unsigned<unsigned>;
+using fixed_uint8_t = detail::fixed_basic_unsigned<uint8_t>;
+using fixed_uint16_t = detail::fixed_basic_unsigned<uint16_t>;
+using fixed_uint32_t = detail::fixed_basic_unsigned<uint32_t>;
+using fixed_uint64_t = detail::fixed_basic_unsigned<uint64_t>;
 
 } // namespace fixed
 

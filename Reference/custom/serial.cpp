@@ -30,6 +30,8 @@ int main() {
 #include <stdio.h>
 #include <fmt.hpp>
 
+#include <string>
+
 int main(int argc, char* argv[])
 {
   if (argc != 2)
@@ -40,6 +42,6 @@ int main(int argc, char* argv[])
   while(i < max)
   {
     fixed::fixed_uint32_t fi{i++};
-    fwrite(fi.data(), sizeof(char), fi.size(), stdout);
+    std::fputs(fi.data(), stdout);
   }
 }
