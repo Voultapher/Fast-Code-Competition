@@ -61,14 +61,13 @@ template<typename C> class fixed_basic_unsigned
 {
 public:
   using value_t = C;
-  static constexpr auto value_size = std::numeric_limits<value_t>::digits10 + 1;
+  static constexpr auto value_size = std::numeric_limits<value_t>::digits10;
 
   using buff_value_t = fixed_buff_value_t;
 
   fixed_basic_unsigned(value_t value) noexcept : offset_(0)
 	{
     auto it = buff_.end();
-    *--it = '\0';
 
     for (; value >= 100; value /= 100)
     {

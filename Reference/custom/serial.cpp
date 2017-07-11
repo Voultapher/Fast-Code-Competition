@@ -42,6 +42,11 @@ int main(int argc, char* argv[])
   while(i < max)
   {
     fixed::fixed_uint32_t fi{i++};
-    std::fputs(fi.data(), stdout);
+    std::fwrite(
+      fi.data(),
+      sizeof(fixed::fixed_uint32_t::buff_value_t),
+      fi.size(),
+      stdout
+    );
   }
 }
