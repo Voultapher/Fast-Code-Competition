@@ -5,44 +5,6 @@
 #include <cstdint>
 #include <array>
 
-/*class atoi_func
-{
-public:
-    atoi_func(): value_() {}
-
-    inline int value() const { return value_; }
-
-    inline bool operator() (const char *str, size_t len)
-    {
-        value_ = 0;
-        int sign = 1;
-        if (str[0] == '-') { // handle negative
-            sign = -1;
-            ++str;
-            --len;
-        }
-
-        switch (len) { // handle up to 10 digits, assume we're 32-bit
-            case 10:    value_ += (str[len-10] - '0') * 1000000000;
-            case  9:    value_ += (str[len- 9] - '0') * 100000000;
-            case  8:    value_ += (str[len- 8] - '0') * 10000000;
-            case  7:    value_ += (str[len- 7] - '0') * 1000000;
-            case  6:    value_ += (str[len- 6] - '0') * 100000;
-            case  5:    value_ += (str[len- 5] - '0') * 10000;
-            case  4:    value_ += (str[len- 4] - '0') * 1000;
-            case  3:    value_ += (str[len- 3] - '0') * 100;
-            case  2:    value_ += (str[len- 2] - '0') * 10;
-            case  1:    value_ += (str[len- 1] - '0');
-                value_ *= sign;
-                return value_ > 0;
-            default:
-                return false;
-        }
-    }
-private:
-    int value_;
-};*/
-
 namespace fixed
 {
 
@@ -67,6 +29,7 @@ public:
 
   fixed_basic_unsigned(value_t value) noexcept : offset_(0)
 	{
+
     auto it = buff_.end();
 
     for (; value >= 100; value /= 100)
