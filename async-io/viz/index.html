@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Benchmark visualization</title>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+
+function buildSeries(obj) {
+  const colorSerial = 'rgba(119, 152, 191, .5)';
+  const colorAsync = 'rgba(223, 83, 83, .5)';
+
+  return [].concat.apply([], obj.map((group, groupIndex) => (
+    group.versions.map((version, versionIndex) => ({
+      name: `${group.name} ${version.name}`,
+      color: versionIndex === 0 ? colorSerial : colorAsync,
+      data: version.runs.map((run) => (
+        [ groupIndex, Math.round((run.kernel + run.user) * 1000) ]
+      ))
+    }))
+  )));
+}
+
+const result = JSON.parse('[]');
+
+const style = {
+  title: { fontSize: '1.625em' },
+  label: { fontSize: '1.4em', color: '#3e90e5' }
+};
+
+Highcharts.chart('container', {
+  chart: {
+    animation: false,
+    type: 'scatter',
+    zoomType: 'y',
+  },
+  title: {
+    text: 'Async IO Challenge Results | 10m Tasks'
+  },
+  xAxis: {
+    //type: 'logarithmic',
+    title: {
+      enabled: true,
+      text: 'Solution Name',
+      style: style.title
+    },
+    labels: {
+      style: style.label
+    },
+    startOnTick: true,
+    endOnTick: true,
+    showLastLabel: true,
+    categories: result.map(elem => elem.name)
+  },
+  yAxis: {
+    title: {
+      text: 'Time in ms',
+      style: style.title
+    },
+    labels: {
+      style: style.label
+    },
+    min: 0
+  },
+  legend: {
+    layout: 'vertical',
+    align: 'left',
+    verticalAlign: 'top',
+    x: 80,
+    y: 10,
+    floating: true,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1
+  },
+  plotOptions: {
+    scatter: {
+      marker: {
+        radius: 7,
+        states: {
+          hover: {
+            enabled: true,
+            lineColor: 'rgb(100,100,100)'
+          }
+        }
+      },
+      states: {
+        hover: {
+          marker: {
+            enabled: false
+          }
+        }
+      },
+      tooltip: {
+        headerFormat: '<b>{series.name}</b><br>',
+        pointFormat: '{point.y} ms'
+      }
+    }
+  },
+  series: buildSeries(result)
+});
+
+}); // addEventListener
+</script>
+
+</head>
+<body>
+
+<div
+  id="container"
+  style="height: 95vh"
+>
+</div>
+
+</body>
+</html>
