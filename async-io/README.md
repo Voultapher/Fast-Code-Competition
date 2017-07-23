@@ -15,7 +15,7 @@ Create 2 applications:
 
 ### Shared:
 * N is a command-line specified number
-* Build and run on Linux
+* Can be build and run on Linux
 
 
 ## Testing
