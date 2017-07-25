@@ -1,5 +1,6 @@
 # Fast Code Competition
 
+	
 ### Abstract:
 Many embrace the challenge that is c++, for the manual control it offers.  
 Often this desire for control is rooted in a need of efficient applications.  
