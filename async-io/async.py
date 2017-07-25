@@ -16,14 +16,13 @@ def consumer(queue):
 
 queue = Queue(maxsize=0)
 
-Thread(target=consumer, args=[queue]).start()
+worker = Thread(target=consumer, args=[queue])
+worker.start()
 
 for i in range(0, int(sys.argv[1])):
     queue.put(i)
 
 
-while not queue.empty():
-    sleep(0.0001)
-
-
 isRunning = False
+
+worker.join()
