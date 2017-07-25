@@ -22,7 +22,7 @@ function test()
   tmp_file_b="tmp_file_b"
 
   createRef $test_size > $tmp_file_a
-  python3 ${1} $test_size > $tmp_file_b
+  ./${1} $test_size > $tmp_file_b
 
   # Diff binary, requires xxd
   #res=$(diff <(xxd $tmp_file_a) <(xxd $tmp_file_b))
