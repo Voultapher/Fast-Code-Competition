@@ -2,46 +2,21 @@
 
 __gshared int currentInt;
 
-enum States {
-    pending,
-    printInt,
-    exit
-}
-shared States state;
+__gshared int[] currentTasks;
+__gshared int index;
 
 void main(string[] args)
 {
     import std.conv, std.stdio;
     import std.concurrency;
     import core.atomic;
-    auto pid = spawn({
-        with (States)
-        for_label: for (;;) {
-            final switch (state.atomicLoad) {
-            case printInt:
-                    currentInt.write;
-                    state.atomicStore(States.pending);
-                goto for_label;
-            case pending:
-                goto for_label;
-            case exit:
-                goto end;
-            }
-        }
-        end:
-    });
-    auto n = args[1].to!int;
-    foreach (i; 0..n)
-    {
-        state.atomicStore(States.printInt);
-        for (;;) {
-            if (state.atomicLoad != States.printInt) {
-                currentInt++;
-                goto end;
-            }
-        }
-        end:
-    }
 
-    state.atomicStore(States.exit);
+    auto n = args[1].to!int;
+    currentTasks = new int[n];
+    auto pid = spawn({
+        while (index < currentTasks.length)
+            currentTasks[index++].write;
+    });
+    foreach (i; 0..n)
+        currentTasks[i] = i;
 }
