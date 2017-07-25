@@ -10,40 +10,42 @@
 #include <deque>
 #include <vector>
 
+#include <boost/lockfree/spsc_queue.hpp>
+
 int main(int argc, char* argv[])
 {
-    std::deque<int> queue;
     std::mutex mtx;
     std::condition_variable cv;
     bool done=false;
 
+    int const N = std::atoi(argv[1]);
+    boost::lockfree::spsc_queue<int> queue(N);
+
     std::thread consumer([&]() {
+        int count = 0;
         while(true)
         {
             int param;
-            int count = 0;
-            {
-                std::unique_lock<std::mutex> lk(mtx);
-                cv.wait(lk, [&]() { return !queue.empty() || done; });
-                if(queue.empty() && done) { break; }
-                param = queue.front();
-                queue.pop_front();
+            if(queue.pop(&param, 1) == 1) {
+                printf(std::to_string(param).c_str());
+            } else {
+                std::lock_guard<std::mutex> lk(mtx);
+                if(done) {
+                    break;
+                }
             }
-            printf(std::to_string(param).c_str());    
         }
     });
 
-    char buffer[255];
-    int const N = std::atoi(argv[1]);
-    //queue.reserve(N;
-
     for(int i = 0; i< N; ++i) {
+        queue.push(i);
+    }
+
+    {
         std::lock_guard<std::mutex> lk(mtx);
-        queue.push_back(i);
-        cv.notify_one();
-     }
-     done = true;
-     cv.notify_all();
-     consumer.join();
+        done = true;
+    }
+
+    consumer.join();
 }
 
