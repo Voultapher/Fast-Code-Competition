@@ -43,4 +43,4 @@ benchmark2: bin/serial_opt bin/async_putchar_opt
 	../benchmark.sh $< $(word 2, $^)
 
 test: bin/async_putchar_opt
-	../benchmark.sh $<
+	../test.sh $<
