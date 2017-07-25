@@ -1,0 +1,13 @@
+c:\users\bor\documents\visual studio 2017\Projects\ffcSerial1\ffcSerial1\bin\Debug\ffcSerial1.exe.config
+c:\users\bor\documents\visual studio 2017\Projects\ffcSerial1\ffcSerial1\bin\Debug\ffcSerial1.exe
+c:\users\bor\documents\visual studio 2017\Projects\ffcSerial1\ffcSerial1\bin\Debug\ffcSerial1.pdb
+c:\users\bor\documents\visual studio 2017\Projects\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.csprojResolveAssemblyReference.cache
+c:\users\bor\documents\visual studio 2017\Projects\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.exe
+c:\users\bor\documents\visual studio 2017\Projects\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.pdb
+D:\Temp\ffcSerial1\ffcSerial1\bin\Debug\ffcSerial1.exe.config
+D:\Temp\ffcSerial1\ffcSerial1\bin\Debug\ffcSerial1.exe
+D:\Temp\ffcSerial1\ffcSerial1\bin\Debug\ffcSerial1.pdb
+D:\Temp\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.csprojResolveAssemblyReference.cache
+D:\Temp\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.csproj.CoreCompileInputs.cache
+D:\Temp\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.exe
+D:\Temp\ffcSerial1\ffcSerial1\obj\Debug\ffcSerial1.pdb
