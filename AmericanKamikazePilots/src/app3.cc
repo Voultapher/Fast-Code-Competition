@@ -1,35 +1,30 @@
 #include <algorithm>
+#include <deque>
 #include <future>
 #include <iostream>
+#include <mutex>
 #include <numeric>
 #include <vector>
-#include <deque>
-#include <mutex>
 
 void printN(int n) {
-    std::async(std::launch::async, [=]{printf("%d", n);});
+    std::async(std::launch::async, [=] { printf("%d", n); });
 }
-
 
 std::deque<int> queue;
 std::mutex mtx;
 
-void task()
-{
+void task() {
     while (1) {
         mtx.lock();
         int i = queue.front();
         queue.pop_front();
         mtx.unlock();
 
-        if (i == -1)
-            return;
+        if (i == -1) return;
 
         printf("%d", i);
     }
 }
-
-
 
 // - Main thread creates tasks
 // - Consumer thread, accepts tasks without blocking

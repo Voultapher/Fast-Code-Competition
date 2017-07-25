@@ -5,7 +5,7 @@
 #include <vector>
 
 void printN(int n) {
-    std::async(std::launch::async, [=]{printf("%d", n);});
+    std::async(std::launch::async, [=] { printf("%d", n); });
 }
 
 // - Main thread creates tasks
@@ -18,7 +18,5 @@ int main(int argc, char *argv[]) {
     if (argc != 2) { std::exit(1); }
 
     const int n = std::atoi(argv[1]);
-    for (int i = 0; i < n; ++i) {
-        printN(i);
-    }
+    for (int i = 0; i < n; ++i) { printN(i); }
 }

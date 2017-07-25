@@ -1,15 +1,13 @@
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 int main(int argc, char* argv[]) {
 
-    if (argc != 2){
-        std::exit(1);
-    }
+    if (argc != 2) { std::exit(1); }
 
     int n = std::atoi(argv[1]);
     char* buffer;
-    buffer = (char*) malloc(n*7*sizeof(char));
+    buffer  = (char*) malloc(n * 7 * sizeof(char));
     char* p = buffer;
 
     for (int i = 0; i < n; ++i) {
