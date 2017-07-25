@@ -5,6 +5,8 @@ LDC_VERSION=1.2.0
 DFLAGS=-g
 PLATFORM=x86_64
 
+all: bin/async_opt bin/serial_opt
+
 ################################################################################
 # Auto-bootstrap DMD & LDC for outdated Debian/Ubuntu
 ################################################################################
@@ -26,8 +28,6 @@ bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM)/bin/ldc2: | bin/ldc2-$(LDC_VERSION)-li
 ################################################################################
 # Programs
 ################################################################################
-
-all: bin/async_opt bin/serial_opt
 
 bin/async: async.d $(DMD) | bin
 	$(DMD) $(DFLAGS) $< -of$@
