@@ -12,7 +12,7 @@
 
 int main(int argc, char* argv[])
 {
-    std::vector<int> queue;
+    std::deque<int> queue;
     std::mutex mtx;
     std::condition_variable cv;
     bool done=false;
@@ -21,12 +21,13 @@ int main(int argc, char* argv[])
         while(true)
         {
             int param;
+            int count = 0;
             {
                 std::unique_lock<std::mutex> lk(mtx);
                 cv.wait(lk, [&]() { return !queue.empty() || done; });
                 if(queue.empty() && done) { break; }
                 param = queue.front();
-                queue.erase(queue.begin());
+                queue.pop_front();
             }
             printf(std::to_string(param).c_str());    
         }
@@ -34,7 +35,7 @@ int main(int argc, char* argv[])
 
     char buffer[255];
     int const N = std::atoi(argv[1]);
-    queue.reserve(N;
+    //queue.reserve(N;
 
     for(int i = 0; i< N; ++i) {
         std::lock_guard<std::mutex> lk(mtx);
