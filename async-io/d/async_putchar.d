@@ -1,45 +1,48 @@
 #!/usr/bin/env rdmd
 
-void print(T)(T n)
-{
-    import core.sys.posix.stdio : putchar_unlocked;
-	if (n == 0)
-	{
-		putchar_unlocked('0');
-	}
-	else
-	{
-		char[11] buf;
-		buf[10] = '\n';
-		int i = 9;
-		while (n)
-		{
-			buf[i--] = n % 10 + '0';
-			n /= 10;
-		}
-		while (buf[i] != '\n')
-			putchar_unlocked(buf[++i]);
-	}
+__gshared int currentInt;
+
+enum States {
+    pending,
+    printInt,
+    exit
 }
+shared States state;
 
 void main(string[] args)
 {
     import std.conv, std.stdio;
     import std.concurrency;
+    import core.atomic;
     auto pid = spawn({
-        bool b = true;
-        while(b)
-        {
-            receive(
-                (bool a) { b = false; },
-                (int n) { n.print; }
-            );
+        with (States)
+        for_label: for (;;) {
+            state.writeln;
+            final switch (state) {
+            case printInt:
+                    currentInt.write;
+                    state.atomicStore(States.pending);
+                goto for_label;
+            case pending:
+                goto for_label;
+            case exit:
+                goto end;
+            }
         }
+        end:
     });
     auto n = args[1].to!int;
-    pid.setMaxMailboxSize(n + 10, OnCrowding.ignore);
     foreach (i; 0..n)
-        pid.send(i);
+    {
+        state.atomicStore(States.printInt);
+        for (;;) {
+            if (state.atomicLoad != States.printInt) {
+                currentInt++;
+                goto end;
+            }
+        }
+        end:
+    }
 
-    pid.send(true);
+    state.atomicStore(States.exit);
 }
