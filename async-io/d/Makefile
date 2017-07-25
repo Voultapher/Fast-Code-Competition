@@ -1,7 +1,7 @@
 DMD=bin/dmd2/linux/bin64/dmd
 DMD_VERSION=2.074.0
 LDC=bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM)/bin/ldc2
-LDC_VERSION=1.2.0
+LDC_VERSION=1.3.0
 DFLAGS=-g
 PLATFORM=x86_64
 
