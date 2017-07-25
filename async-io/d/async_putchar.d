@@ -17,8 +17,7 @@ void main(string[] args)
     auto pid = spawn({
         with (States)
         for_label: for (;;) {
-            state.writeln;
-            final switch (state) {
+            final switch (state.atomicLoad) {
             case printInt:
                     currentInt.write;
                     state.atomicStore(States.pending);
