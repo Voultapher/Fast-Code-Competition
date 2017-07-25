@@ -27,6 +27,8 @@ bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM)/bin/ldc2: | bin/ldc2-$(LDC_VERSION)-li
 # Programs
 ################################################################################
 
+all: bin/async_opt bin/serial_opt
+
 bin/async: async.d $(DMD) | bin
 	$(DMD) $(DFLAGS) $< -of$@
 
