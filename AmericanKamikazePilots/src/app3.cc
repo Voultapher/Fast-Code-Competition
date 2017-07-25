@@ -5,20 +5,19 @@
 #include <mutex>
 #include <numeric>
 #include <vector>
-
-void printN(int n) {
-    std::async(std::launch::async, [=] { printf("%d", n); });
-}
+#include <deque>
+#include <atomic>
 
 std::deque<int> queue;
-std::mutex mtx;
+std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
 void task() {
     while (1) {
-        mtx.lock();
+        while (lock.test_and_set(std::memory_order_acquire))  // acquire lock
+            ; // spin
         int i = queue.front();
         queue.pop_front();
-        mtx.unlock();
+        lock.clear(std::memory_order_release);
 
         if (i == -1) return;
 
@@ -39,9 +38,10 @@ int main(int argc, char *argv[]) {
 
     const int n = std::atoi(argv[1]);
     for (int i = 0; i < n; ++i) {
-        mtx.lock();
+        while (lock.test_and_set(std::memory_order_acquire))  // acquire lock
+            ; // spin
         queue.push_back(i);
-        mtx.unlock();
+        lock.clear(std::memory_order_release);
     }
     queue.push_back(-1);
 
