@@ -1,20 +1,19 @@
 #include <algorithm>
+#include <atomic>
 #include <deque>
 #include <future>
 #include <iostream>
 #include <mutex>
 #include <numeric>
 #include <vector>
-#include <deque>
-#include <atomic>
 
 std::deque<int> queue;
 std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
 void task() {
     while (1) {
-        while (lock.test_and_set(std::memory_order_acquire))  // acquire lock
-            ; // spin
+        while (lock.test_and_set(std::memory_order_acquire)) // acquire lock
+            ;                                                // spin
         int i = queue.front();
         queue.pop_front();
         lock.clear(std::memory_order_release);
@@ -38,8 +37,8 @@ int main(int argc, char *argv[]) {
 
     const int n = std::atoi(argv[1]);
     for (int i = 0; i < n; ++i) {
-        while (lock.test_and_set(std::memory_order_acquire))  // acquire lock
-            ; // spin
+        while (lock.test_and_set(std::memory_order_acquire)) // acquire lock
+            ;                                                // spin
         queue.push_back(i);
         lock.clear(std::memory_order_release);
     }
