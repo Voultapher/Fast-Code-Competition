@@ -40,3 +40,6 @@ bin/serial: serial.d $(DMD) | bin
 
 bin/serial_opt: serial.d $(LDC) | bin
 	$(LDC) -g -O4 -mcpu=native -release $(DFLAGS) $< -of$@
+
+benchmark: all
+	../benchmark.sh ./bin/async_opt ./bin/serial_op
