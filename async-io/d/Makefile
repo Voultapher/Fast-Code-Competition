@@ -29,17 +29,18 @@ bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM)/bin/ldc2: | bin/ldc2-$(LDC_VERSION)-li
 # Programs
 ################################################################################
 
-bin/async: async.d $(DMD) | bin
-	$(DMD) $(DFLAGS) $< -of$@
 
-bin/async_opt: async.d $(LDC) | bin
+bin/%_opt: %.d $(LDC) | bin
 	$(LDC) -g -O4 -mcpu=native -release $(DFLAGS) $< -of$@
 
-bin/serial: serial.d $(DMD) | bin
+bin/%: %.d $(DMD) | bin
 	$(DMD) $(DFLAGS) $< -of$@
 
-bin/serial_opt: serial.d $(LDC) | bin
-	$(LDC) -g -O4 -mcpu=native -release $(DFLAGS) $< -of$@
+benchmark: bin/serial_opt bin/async_opt
+	../benchmark.sh $< $(word 2, $^)
 
-benchmark: all
-	../benchmark.sh ./bin/serial_opt ./bin/async_opt
+benchmark2: bin/serial_opt bin/async_putchar_opt
+	../benchmark.sh $< $(word 2, $^)
+
+test: bin/async_putchar_opt
+	../benchmark.sh $<
