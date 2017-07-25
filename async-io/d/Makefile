@@ -5,7 +5,7 @@ LDC_VERSION=1.3.0
 DFLAGS=-g
 PLATFORM=x86_64
 
-all: bin/async_opt bin/serial_opt bin/async_putchar_opt
+all: bin/async_opt bin/serial_opt bin/async_putchar2_opt
 
 ################################################################################
 # Auto-bootstrap DMD & LDC for outdated Debian/Ubuntu
