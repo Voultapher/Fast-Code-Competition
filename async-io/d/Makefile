@@ -39,7 +39,10 @@ bin/%: %.d $(DMD) | bin
 benchmark: bin/serial_opt bin/async_opt
 	../benchmark.sh $< $(word 2, $^)
 
-benchmark2: bin/serial_opt bin/async_putchar_opt
+benchmark_queue: bin/serial_opt bin/async_queue_opt
+	../benchmark.sh $< $(word 2, $^)
+
+benchmark_atomic: bin/serial_opt bin/async_atomic_opt
 	../benchmark.sh $< $(word 2, $^)
 
 test: bin/async_putchar_opt

@@ -1,22 +1,26 @@
 #!/usr/bin/env rdmd
 
+__gshared int maxInt;
+__gshared int currentInt;
+
 void main(string[] args)
 {
     import std.conv, std.stdio;
     import std.concurrency;
-    scope(failure) assert(1);
     auto pid = spawn({
-        bool b = true;
-        while(b)
+        for (;;)
         {
-            receive(
-                (bool a) { b = false; },
-                (int n) { n.write; }
-            );
+            if (receiveOnly!bool)
+                printf("%d", currentInt++);
+            else
+                goto end;
         }
+end:
     });
-    foreach (i; 0..args[1].to!int)
-        pid.send(i);
+    auto n = args[1].to!int;
+    pid.setMaxMailboxSize(n + 10, OnCrowding.ignore);
+    foreach (i; 0..n)
+        pid.send(true);
 
-    pid.send(true);
+    pid.send(false);
 }
