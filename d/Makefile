@@ -5,7 +5,7 @@ LDC_VERSION=1.3.0
 DFLAGS=-g
 PLATFORM=x86_64
 
-all: bin/async_opt bin/serial_opt bin/async_putchar2_opt
+all: bin/serial_opt bin/async_opt bin/async_queue_opt bin/async_atomic_opt
 
 ################################################################################
 # Auto-bootstrap DMD & LDC for outdated Debian/Ubuntu
@@ -24,26 +24,27 @@ bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM): | bin
 
 bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM)/bin/ldc2: | bin/ldc2-$(LDC_VERSION)-linux-$(PLATFORM)
 
-
-################################################################################
-# Programs
-################################################################################
-
-
 bin/%_opt: %.d $(LDC) | bin
 	$(LDC) -g -O4 -mcpu=native -release $(DFLAGS) $< -of$@
 
 bin/%: %.d $(DMD) | bin
 	$(DMD) $(DFLAGS) $< -of$@
 
+################################################################################
+# Programs
+################################################################################
+
+BENCHMARK=../async-io/benchmark.sh
+TEST=../async-io/test.sh
+
 benchmark: bin/serial_opt bin/async_opt
-	../benchmark.sh $< $(word 2, $^)
+	$(BENCHMARK) $< $(word 2, $^)
 
 benchmark_queue: bin/serial_opt bin/async_queue_opt
-	../benchmark.sh $< $(word 2, $^)
+	$(BENCHMARK) $< $(word 2, $^)
 
 benchmark_atomic: bin/serial_opt bin/async_atomic_opt
-	../benchmark.sh $< $(word 2, $^)
+	$(BENCHMARK) $< $(word 2, $^)
 
-test: bin/async_putchar_opt
-	../test.sh $<
+test: bin/async_opt
+	$(TEST) $<
