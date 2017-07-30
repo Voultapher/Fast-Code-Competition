@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dev/projects/cpp/Fast-Code-Competition/Quivering_Sharks/async.cpp
+cstdlib
+-
+cstdio
+-
+string
+-
+iostream
+-
+thread
+-
+mutex
+-
+condition_variable
+-
+deque
+-
+vector
+-
+boost/lockfree/spsc_queue.hpp
+-
+

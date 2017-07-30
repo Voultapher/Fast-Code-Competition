@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/app4.dir/src/app4.cc.o  -o app4 -lpthread 

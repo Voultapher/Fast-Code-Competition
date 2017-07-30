@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dev/projects/cpp/Fast-Code-Competition/Quivering_Sharks/serial.cpp
+cstdlib
+-
+cstdio
+-
+string
+-
+iostream
+-
+

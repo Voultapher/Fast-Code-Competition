@@ -1,0 +1,7 @@
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/rebuild_cache.dir
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/app1.dir
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/app0.dir
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/app2.dir
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/edit_cache.dir
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/app3.dir
+/home/dev/projects/cpp/Fast-Code-Competition/AmericanKamikazePilots/CMakeFiles/app4.dir
